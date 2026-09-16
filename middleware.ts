@@ -27,8 +27,10 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get(TOKEN_COOKIE)?.value
   const role = request.cookies.get(ROLE_COOKIE)?.value
 
-  // Already signed in? The login screen has nothing left to offer.
-  if (pathname === '/login' && token) {
+  // Already signed in? The login screen has nothing left to offer — unless we
+  // arrived carrying the "your session expired" notice, in which case the token
+  // is stale and sending it back to a dashboard would loop.
+  if (pathname === '/login' && token && !request.nextUrl.searchParams.has('expired')) {
     return NextResponse.redirect(
       new URL(role === 'admin' ? '/admin/dashboard' : '/dashboard', request.url),
     )

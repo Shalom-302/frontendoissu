@@ -4,7 +4,7 @@ import { ProfileCard } from '@/components/athlete/profile-card'
 import { SelfUpdateForm } from '@/components/athlete/self-update-form'
 import { Alert } from '@/components/ui/alert'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ApiError, apiFetch } from '@/lib/api-server'
+import { apiErrorMessage, apiFetch } from '@/lib/api-server'
 import type { AthleteDetail } from '@/types'
 
 export const metadata: Metadata = { title: 'Mon profil' }
@@ -16,10 +16,7 @@ export default async function ProfilePage() {
   try {
     athlete = await apiFetch<AthleteDetail>('/api/v1/athletes/me')
   } catch (error) {
-    const message =
-      error instanceof ApiError
-        ? error.message
-        : 'Le service est momentanément injoignable. Réessayez dans un instant.'
+    const message = apiErrorMessage(error)
     return (
       <Alert tone="error">
         <p className="font-medium">Profil indisponible</p>
