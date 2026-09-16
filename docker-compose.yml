@@ -1,16 +1,21 @@
-# Base stack — identical on every branch (dev / staging / main).
+# OISSU CONNECT — frontend stack (main / production).
 #
-# It describes the PRODUCTION shape: the image is PULLED from the registry, not
-# built here, and there is no source mount or hot reload.
-# `docker-compose.dev.yml` is the only overlay that adds a `build:` section —
-# which is what lets Dokploy deploy by pulling a tag instead of compiling on the
-# server. Each branch ships its own `docker-compose.override.yml` (loaded
-# automatically by `docker compose up`), so a merge between branches touches the
-# override only.
+# SELF-CONTAINED ON PURPOSE. There is no docker-compose.override.yml: Dokploy
+# deploys with an explicit `-f <compose path>`, and Docker Compose only
+# auto-loads an override file when it discovers the files itself. An overlay
+# would therefore be silently ignored in production — the stack would start with
+# the wrong image on the wrong network and look healthy.
+#
+# So each branch carries its own complete file:
+#   dev      local build of the `dev` stage, source bind-mounted, hot reload
+#   staging  pulls :staging from GHCR, joins dokploy-network
+#   main     pulls :main    from GHCR, joins dokploy-network, hardened
+#
+# What you read here is exactly what runs on this branch.
 services:
   web:
-    # Published by .github/workflows/docker-publish.yml on every push.
-    # Override with WEB_IMAGE to pin a tag or a commit.
+    # Built and pushed by .github/workflows/docker-publish.yml on every push to
+    # this branch. Pin a commit with WEB_IMAGE=...:sha-1a2b3c4 when you need to.
     image: ${WEB_IMAGE:-ghcr.io/shalom-302/frontendoissu:main}
     container_name: ${WEB_CONTAINER_NAME:-oissu_client}
     restart: unless-stopped
@@ -22,16 +27,37 @@ services:
       # Where the Next.js server reaches the API. The browser never calls the
       # API directly (everything goes through /api/proxy), so this is the only
       # address that has to resolve — and it is read at runtime, not baked into
-      # the build.
-      - API_INTERNAL_URL=${API_INTERNAL_URL:-http://host.docker.internal:8000}
+      # the build, which is why the exact image validated on staging is the one
+      # promoted to production.
+      # Required: a deployment must never fall back silently to a local API.
+      - API_INTERNAL_URL=${API_INTERNAL_URL:?API_INTERNAL_URL est obligatoire}
       - NODE_ENV=production
-    extra_hosts:
-      # Lets the container reach a backend running on the host (Docker Desktop
-      # provides this name natively; on Linux the mapping below adds it).
-      - "host.docker.internal:host-gateway"
+    # The server writes nothing outside /tmp and the Next.js cache.
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     networks:
-      - oissu
+      # Shared with the API stack: that is how API_INTERNAL_URL can name the
+      # API container (http://oissu_api:8000).
+      - dokploy-network
 
 networks:
-  oissu:
-    driver: bridge
+  # Created and owned by Dokploy (overlay, swarm scope). `external` attaches to
+  # the existing network instead of creating a second, isolated one.
+  dokploy-network:
+    external: true

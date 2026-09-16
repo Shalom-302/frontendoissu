@@ -114,29 +114,28 @@ middleware.ts                 Garde de routes
 
 ## Branches et configuration Docker
 
-Trois branches, **le même code source**, des fichiers de configuration Docker
-différents. `docker-compose.yml` est identique partout et décrit la forme de
-production : l'image est **tirée** du registre, pas construite. Seul
-`docker-compose.dev.yml` ajoute une section `build:`. Chaque branche fournit son
-propre `docker-compose.override.yml`, chargé automatiquement par
-`docker compose up`.
+Trois branches, **le même code source**, un `docker-compose.yml` complet par
+branche. Ce que vous lisez dans ce fichier sur une branche est exactement ce qui
+y tourne.
 
-| Branche | `docker-compose.override.yml` | Ce qu'elle apporte |
-| --- | --- | --- |
-| `dev` | copie de `docker-compose.dev.yml` | Construit l'étape `dev` localement, bind-mount du code source, hot-reload, API sur `localhost` |
-| `staging` | copie de `docker-compose.staging.yml` | Tire `:staging` depuis GHCR, rattachement au réseau externe `dokploy-network`, port dédié, limites mémoire et rotation des logs |
-| `main` | copie de `docker-compose.prod.yml` | Tire `:main`, `dokploy-network`, durcissement : filesystem en lecture seule, `no-new-privileges`, politique de redémarrage |
+| Branche | Ce que décrit `docker-compose.yml` |
+| --- | --- |
+| `dev` | Construit l'étape `dev` localement, bind-mount du code source, hot-reload, API sur `localhost` |
+| `staging` | Tire `:staging` depuis GHCR, rejoint le réseau externe `dokploy-network`, port 3001, limites mémoire et rotation des logs |
+| `main` | Tire `:main`, `dokploy-network`, filesystem en lecture seule, `no-new-privileges`, politique de redémarrage |
 
-Les trois variantes restent présentes dans le dépôt sous leur nom explicite
-(`docker-compose.dev.yml`, `.staging.yml`, `.prod.yml`) : seule la copie active
-en `docker-compose.override.yml` change d'une branche à l'autre, ce qui limite
-les conflits de merge à ce seul fichier.
+> **Il n'y a volontairement pas de `docker-compose.override.yml`.** Docker
+> Compose ne charge un override automatiquement que lorsqu'il découvre les
+> fichiers lui-même ; un outil de déploiement passe un `-f <chemin>` explicite,
+> et l'overlay est alors **silencieusement ignoré**. Vérifié : sur la branche
+> `staging`, `docker compose config` donnait `:staging` sur `dokploy-network`,
+> tandis que `docker compose -f docker-compose.yml config` dans le même dépôt
+> donnait `:main` sur un bridge privé — une stack qui démarre, se déclare saine,
+> et qui est fausse. Un fichier autosuffisant par branche supprime le piège.
 
-```bash
-git checkout dev        # travail local, hot-reload
-git checkout staging    # pré-production (Dokploy)
-git checkout main       # production
-```
+Le coût : les modifications communes entrent en conflit au merge
+`dev` → `staging` → `main`. C'est le compromis assumé — un conflit que vous
+résolvez vaut mieux qu'un déploiement qui ignore la moitié de sa configuration.
 
 ## Image de conteneur (GHCR)
 
@@ -162,7 +161,7 @@ image se promeut de staging vers la production sans reconstruction.
 
 ## Déploiement sur Dokploy
 
-Créez une application **Compose** pointant sur ce dépôt :
+Créez une application **Compose** :
 
 | Champ | Valeur |
 | --- | --- |
@@ -170,24 +169,19 @@ Créez une application **Compose** pointant sur ce dépôt :
 | Branche | `staging` ou `main` |
 | Chemin du compose | `docker-compose.yml` |
 
-`docker-compose.override.yml` est à côté et se charge tout seul : la branche
-suffit à décider de l'environnement. Dokploy tire l'image au lieu de la
-construire, puisqu'aucun fichier compose de ces branches n'a de `build:`.
+Le même chemin sur toutes les branches — la branche seule décide de
+l'environnement, puisque c'est le fichier lui-même qui diffère.
 
-### Staging et Dokploy
+Le conteneur rejoint `dokploy-network`, partagé avec la stack de l'API : c'est
+ce qui permet à `API_INTERNAL_URL` de désigner l'API par son nom de conteneur.
 
-La pré-production est déployée par Dokploy, qui possède déjà un réseau overlay
-sur le VPS. L'override de `staging` rejoint donc `dokploy-network` **en réseau
-externe** au lieu de créer un bridge privé — c'est ce qui permet au front et à
-l'API de se joindre par leur nom de service :
-
-```yaml
+```
 API_INTERNAL_URL=http://oissu_api:8000
 ```
 
-`!override` sur la liste `networks` du service remplace l'entrée du fichier de
-base au lieu de s'y ajouter, donc le conteneur n'est que sur `dokploy-network`.
-L'API doit être attachée au même réseau pour être joignable par son nom.
+`API_INTERNAL_URL` est **obligatoire** sur les branches déployées : le compose
+refuse de démarrer sans elle, pour qu'un déploiement ne retombe jamais
+silencieusement sur une API locale.
 
 ## Variables d'environnement
 
