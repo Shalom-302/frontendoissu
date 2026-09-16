@@ -36,7 +36,7 @@ export function Hero({ signedIn, homeHref }: { signedIn: boolean; homeHref: stri
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[62%_center]"
+          className="object-cover object-center"
         />
       </motion.div>
 

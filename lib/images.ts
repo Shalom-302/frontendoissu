@@ -1,12 +1,17 @@
 /**
  * Photography used on the public pages.
  *
- * Every entry was fetched and looked at before being listed, so the caption
- * matches what the photo actually shows — a landing page that labels a swimmer
- * as a handball match is worse than one with no photo at all.
+ * Two rules govern this file.
+ *
+ * 1. Every photo was fetched and looked at before being listed, so the caption
+ *    matches what it actually shows — a landing page that labels a swimmer as a
+ *    handball match is worse than one with no photo at all.
+ * 2. OISSU CONNECT is built for the Ivorian school and university sport
+ *    federation, so the people on these pages are African athletes. A visitor
+ *    should recognise themselves on the home page of their own federation.
  *
  * Source: Unsplash (free to use under the Unsplash licence). `id` is the photo
- * slug; `builds` the delivery URL with the crop the layout needs.
+ * slug; `photo()` builds the delivery URL with the crop the layout needs.
  */
 
 const BASE = 'https://images.unsplash.com/photo-'
@@ -16,18 +21,18 @@ function photo(id: string, { w, h, q = 72 }: { w: number; h: number; q?: number 
 }
 
 export const HERO_IMAGE = {
-  src: photo('1461896836934-ffe607ba8211', { w: 1920, h: 1280, q: 76 }),
-  alt: "Athlète dans les starting-blocks sur une piste d'athlétisme",
+  src: photo('1698671823406-035c77ff6fcd', { w: 1920, h: 1120, q: 78 }),
+  alt: "Sprinteur s'élançant des starting-blocks sur une piste d'athlétisme",
 }
 
 export const SCHOOL_SPORT_IMAGE = {
-  src: photo('1526232761682-d26e03ac148e', { w: 1200, h: 900 }),
-  alt: 'Un encadreur entouré de jeunes joueurs sur un terrain de football',
+  src: photo('1745012010615-47abbeb3e906', { w: 1200, h: 900 }),
+  alt: 'Jeunes joueurs disputant un match de football sur un terrain herbeux',
 }
 
 export const CTA_IMAGE = {
-  src: photo('1431324155629-1a6deb1dec8d', { w: 1920, h: 1280, q: 72 }),
-  alt: 'Terrain de sport éclairé en soirée',
+  src: photo('1652665314612-c48e10a01598', { w: 1920, h: 900, q: 72 }),
+  alt: 'Jeunes joueurs de football sur un terrain en terre',
 }
 
 /**
@@ -44,28 +49,28 @@ export const DISCIPLINE_TILES: {
 }[] = [
   {
     name: 'Athlétisme',
-    src: photo('1552674605-db6ffd4facb5', { w: 800, h: 1000 }),
-    alt: 'Coureurs à contre-jour au lever du soleil',
+    src: photo('1526676537331-7747bf8278fc', { w: 800, h: 1000 }),
+    alt: 'Coureurs en pleine course sur une piste d’athlétisme',
   },
   {
     name: 'Football',
-    src: photo('1517466787929-bc90951d0974', { w: 800, h: 1000 }),
-    alt: 'Joueur de football frappant le ballon',
+    src: photo('1510597026538-da2e86b8588a', { w: 800, h: 1000 }),
+    alt: 'Jeune footballeur contrôlant le ballon du pied',
   },
   {
     name: 'Basketball',
-    src: photo('1546519638-68e109498ffc', { w: 800, h: 1000 }),
-    alt: 'Ballon de basket traversant l’arceau',
+    src: photo('1667844141293-2036371911fd', { w: 800, h: 1000 }),
+    alt: 'Joueur de basket avec son ballon sur un terrain d’établissement',
   },
   {
     name: 'Volleyball',
-    src: photo('1547347298-4074fc3086f0', { w: 800, h: 1000 }),
-    alt: 'Échange lors d’un match de volleyball en salle',
+    src: photo('1601512986351-9b0e01780eef', { w: 800, h: 1000 }),
+    alt: 'Attaque au filet lors d’un match de volleyball',
   },
   {
     name: 'Natation',
-    src: photo('1530549387789-4c1017266635', { w: 800, h: 1000 }),
-    alt: 'Nageuse en papillon dans un bassin',
+    src: photo('1649163783135-a66ab43e1193', { w: 800, h: 1000 }),
+    alt: 'Nageur en crawl dans un couloir de bassin',
   },
   {
     name: 'Handball',
