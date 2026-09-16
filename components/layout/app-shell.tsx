@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { Logo } from '@/components/brand/logo'
 import { LogoutButton } from '@/components/layout/logout-button'
 import { Nav, type NavItem } from '@/components/layout/nav'
 import { Badge } from '@/components/ui/badge'
@@ -45,13 +46,9 @@ export async function AppShell({
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
+        <div className="h-0.5 bg-oissu-gradient" />
         <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-3 px-4">
-          <Link href={home} className="flex items-center gap-2 font-semibold">
-            <span className="grid size-8 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
-              OC
-            </span>
-            <span className="hidden sm:inline">OISSU CONNECT</span>
-          </Link>
+          <Logo href={home} size="sm" />
 
           <div className="flex items-center gap-3">
             <div className="text-right text-sm leading-tight">

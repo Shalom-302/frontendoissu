@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import { Logo } from '@/components/brand/logo'
 import { LoginForm } from '@/components/auth/login-form'
 
 export const metadata: Metadata = { title: 'Connexion' }
@@ -21,12 +22,9 @@ export default async function LoginPage({
   return (
     <div className="grid min-h-dvh place-items-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <Link href="/" className="mb-8 flex items-center justify-center gap-2 font-semibold">
-          <span className="grid size-9 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
-            OC
-          </span>
-          OISSU CONNECT
-        </Link>
+        <div className="mb-8 flex justify-center">
+          <Logo href="/" size="lg" showTagline priority />
+        </div>
 
         <h1 className="text-xl font-semibold">Connexion</h1>
         <p className="mt-1 text-sm text-muted">
