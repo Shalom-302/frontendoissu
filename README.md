@@ -122,7 +122,7 @@ chargé automatiquement par `docker compose up`.
 | Branche | `docker-compose.override.yml` | Ce qu'elle apporte |
 | --- | --- | --- |
 | `dev` | copie de `docker-compose.dev.yml` | Étape `dev` de l'image, bind-mount du code source, hot-reload, API sur `localhost` |
-| `staging` | copie de `docker-compose.staging.yml` | Image de production, port dédié, limites mémoire et rotation des logs |
+| `staging` | copie de `docker-compose.staging.yml` | Image de production, rattachement au réseau externe `dokploy-network`, port dédié, limites mémoire et rotation des logs |
 | `main` | copie de `docker-compose.prod.yml` | Durcissement : filesystem en lecture seule, `no-new-privileges`, politique de redémarrage |
 
 Les trois variantes restent présentes dans le dépôt sous leur nom explicite
@@ -132,9 +132,24 @@ les conflits de merge à ce seul fichier.
 
 ```bash
 git checkout dev        # travail local, hot-reload
-git checkout staging    # pré-production
+git checkout staging    # pré-production (Dokploy)
 git checkout main       # production
 ```
+
+### Staging et Dokploy
+
+La pré-production est déployée par Dokploy, qui possède déjà un réseau overlay
+sur le VPS. L'override de `staging` rejoint donc `dokploy-network` **en réseau
+externe** au lieu de créer un bridge privé — c'est ce qui permet au front et à
+l'API de se joindre par leur nom de service :
+
+```yaml
+API_INTERNAL_URL=http://oissu_api:8000
+```
+
+`!override` sur la liste `networks` du service remplace l'entrée du fichier de
+base au lieu de s'y ajouter, donc le conteneur n'est que sur `dokploy-network`.
+L'API doit être attachée au même réseau pour être joignable par son nom.
 
 ## Variables d'environnement
 
