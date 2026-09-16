@@ -43,8 +43,8 @@ Comptes de démonstration :
 
 | Rôle | Login | Mot de passe |
 | --- | --- | --- |
-| ADMIN | `admin.demo@oissu.local` | `OissuDemo2026!` |
-| ATHLÈTE | `athlete001@oissu.local` | `AthleteDemo2026!` |
+| ADMIN | `admin.demo@oissu-demo.ci` | `OissuDemo2026!` |
+| ATHLÈTE | `athlete001@oissu-demo.ci` | `AthleteDemo2026!` |
 
 ## Parcours
 

@@ -50,13 +50,25 @@ export async function AppShell({
         <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-3 px-4">
           <Logo href={home} size="sm" />
 
-          <div className="flex items-center gap-3">
-            <div className="text-right text-sm leading-tight">
-              <div className="font-medium">{displayName(session)}</div>
-              <div className="text-xs text-muted">{session.email}</div>
+          {/* The identity block is the first thing to go on a phone: the name
+              and the email wrapped into the logo before this. */}
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="hidden min-w-0 text-right text-sm leading-tight sm:block">
+              <div className="truncate font-medium">{displayName(session)}</div>
+              <div className="truncate text-xs text-muted">{session.email}</div>
             </div>
-            <Badge variant={session.role === 'admin' ? 'default' : 'outline'}>
-              {session.role === 'admin' ? 'Administrateur' : 'Athlète'}
+            <Badge
+              variant={session.role === 'admin' ? 'default' : 'outline'}
+              className="whitespace-nowrap"
+            >
+              {session.role === 'admin' ? (
+                <>
+                  <span className="sm:hidden">Admin</span>
+                  <span className="hidden sm:inline">Administrateur</span>
+                </>
+              ) : (
+                'Athlète'
+              )}
             </Badge>
             <LogoutButton />
           </div>
@@ -64,7 +76,7 @@ export async function AppShell({
       </header>
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 lg:flex-row">
-        <aside className="lg:w-56 lg:shrink-0">
+        <aside className="-mx-4 px-4 lg:mx-0 lg:w-56 lg:shrink-0 lg:px-0">
           <Nav items={NAV[space]} exact={DASHBOARD_ROOTS} />
         </aside>
         <main className="min-w-0 flex-1">{children}</main>
