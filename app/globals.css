@@ -3,26 +3,63 @@
 /*
  * OISSU CONNECT design tokens.
  *
- * One palette, defined once on `:root` and re-pointed under `.dark`, so every
- * component styles itself with semantic names (`bg-surface`, `text-muted`)
- * rather than raw colours. Swapping the institutional colours is a one-file job.
+ * The palette is sampled from the OISSU mark (`public/oissu-logo.png`): a navy
+ * athlete inside a royal-blue V, framed by an orange arc and a green one — the
+ * Ivorian colours. Navy carries the interface, royal blue is the action colour,
+ * orange is the accent and green reads as "valid".
+ *
+ * Every colour is defined once on `:root` and re-pointed under `.dark`, so
+ * components style themselves with semantic names (`bg-surface`, `text-muted`).
  */
 
 @theme {
-  --color-brand-50: #eef7f1;
-  --color-brand-100: #d3ebda;
-  --color-brand-200: #a7d7b6;
-  --color-brand-300: #71bb8c;
-  --color-brand-400: #429b65;
-  --color-brand-500: #1f7a48;
-  --color-brand-600: #16613a;
-  --color-brand-700: #124d2f;
-  --color-brand-800: #0e3c25;
-  --color-brand-900: #0a2a1a;
+  /* Navy — sampled #02215E */
+  --color-navy-50: #eef1f8;
+  --color-navy-100: #d3daed;
+  --color-navy-200: #a3b1d6;
+  --color-navy-300: #6b80b8;
+  --color-navy-400: #3d5498;
+  --color-navy-500: #1b3577;
+  --color-navy-600: #02215e;
+  --color-navy-700: #021b4d;
+  --color-navy-800: #01143a;
+  --color-navy-900: #010d26;
 
-  --color-accent-400: #f9a03f;
-  --color-accent-500: #ef7f1a;
-  --color-accent-600: #c96311;
+  /* Royal blue — sampled #003FA9 */
+  --color-royal-50: #eaf1fd;
+  --color-royal-100: #cddffa;
+  --color-royal-200: #9cbdf5;
+  --color-royal-300: #5c93ee;
+  --color-royal-400: #2468d9;
+  --color-royal-500: #0a4fc4;
+  --color-royal-600: #003fa9;
+  --color-royal-700: #003289;
+  --color-royal-800: #002668;
+  --color-royal-900: #001a48;
+
+  /* Orange arc — sampled #FF6600 */
+  --color-flame-50: #fff3ea;
+  --color-flame-100: #ffe0c9;
+  --color-flame-200: #ffc094;
+  --color-flame-300: #ff9c58;
+  --color-flame-400: #ff7f26;
+  --color-flame-500: #ff6600;
+  --color-flame-600: #d75500;
+  --color-flame-700: #ab4300;
+  --color-flame-800: #7e3200;
+  --color-flame-900: #572200;
+
+  /* Green arc — sampled #008733 */
+  --color-palm-50: #e8f6ed;
+  --color-palm-100: #c5e9d1;
+  --color-palm-200: #8ed3a6;
+  --color-palm-300: #4fb974;
+  --color-palm-400: #1a9c4c;
+  --color-palm-500: #008733;
+  --color-palm-600: #006e2a;
+  --color-palm-700: #005721;
+  --color-palm-800: #004119;
+  --color-palm-900: #002c11;
 
   --color-gold: #d4af37;
   --color-silver: #9ca3af;
@@ -34,27 +71,27 @@
 }
 
 :root {
-  --background: #f6f7f5;
+  --background: #f5f7fb;
   --surface: #ffffff;
-  --surface-muted: #f1f3f0;
-  --border: #e2e6e0;
-  --foreground: #14211a;
-  --muted: #5d6b62;
-  --primary: var(--color-brand-500);
+  --surface-muted: #eef2f9;
+  --border: #dde4f0;
+  --foreground: #0b1530;
+  --muted: #5b6885;
+  --primary: var(--color-royal-600);
   --primary-foreground: #ffffff;
-  --ring: var(--color-brand-400);
+  --ring: var(--color-royal-400);
 }
 
 .dark {
-  --background: #0c120f;
-  --surface: #131b17;
-  --surface-muted: #1a241e;
-  --border: #253128;
-  --foreground: #eaf1ec;
-  --muted: #9aa9a0;
-  --primary: var(--color-brand-400);
-  --primary-foreground: #06120c;
-  --ring: var(--color-brand-300);
+  --background: #070c1c;
+  --surface: #0e1630;
+  --surface-muted: #15203f;
+  --border: #1e2b4f;
+  --foreground: #e8edf8;
+  --muted: #94a2c0;
+  --primary: var(--color-royal-300);
+  --primary-foreground: #001a48;
+  --ring: var(--color-royal-300);
 }
 
 @theme inline {
@@ -67,6 +104,22 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-ring: var(--ring);
+
+  /* Kept as aliases so components written against the first palette (badges,
+     buttons) do not have to be rewritten when the brand colours move. */
+  --color-brand-50: var(--color-royal-50);
+  --color-brand-100: var(--color-royal-100);
+  --color-brand-200: var(--color-royal-200);
+  --color-brand-300: var(--color-royal-300);
+  --color-brand-400: var(--color-royal-400);
+  --color-brand-500: var(--color-royal-500);
+  --color-brand-600: var(--color-royal-600);
+  --color-brand-700: var(--color-royal-700);
+  --color-brand-800: var(--color-navy-600);
+  --color-brand-900: var(--color-navy-800);
+  --color-accent-400: var(--color-flame-400);
+  --color-accent-500: var(--color-flame-500);
+  --color-accent-600: var(--color-flame-600);
 }
 
 @layer base {
@@ -76,6 +129,7 @@
 
   html {
     color-scheme: light;
+    scroll-behavior: smooth;
   }
 
   html.dark {
@@ -93,5 +147,37 @@
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
+  }
+
+  /* Respect the system setting: every entrance animation collapses to a plain
+     appearance rather than moving. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* The three-colour signature of the mark, for rules and underlines. */
+  .bg-oissu-gradient {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-flame-500) 0%,
+      var(--color-royal-600) 50%,
+      var(--color-palm-500) 100%
+    );
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
