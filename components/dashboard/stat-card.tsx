@@ -18,14 +18,18 @@ export function StatCard({
 }) {
   return (
     <Card className={className}>
-      <CardContent className="flex items-start justify-between gap-3">
+      <CardContent className="flex items-start justify-between gap-2 px-4 sm:gap-3 sm:px-5">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
+          <p className="mt-1 text-xl font-semibold tabular-nums sm:text-2xl">{value}</p>
           {hint ? <p className="mt-1 truncate text-xs text-muted">{hint}</p> : null}
         </div>
         {Icon ? (
-          <span className={cn('grid size-9 shrink-0 place-items-center rounded-md bg-surface-muted')}>
+          <span
+            className={cn(
+              'hidden size-9 shrink-0 place-items-center rounded-md bg-surface-muted sm:grid',
+            )}
+          >
             <Icon className="size-4 text-primary" aria-hidden />
           </span>
         ) : null}

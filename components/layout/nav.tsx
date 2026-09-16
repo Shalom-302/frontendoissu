@@ -21,7 +21,10 @@ export function Nav({ items, exact = [] }: { items: NavItem[]; exact?: string[] 
   const pathname = usePathname()
 
   return (
-    <nav className="flex flex-col gap-1" aria-label="Navigation principale">
+    <nav
+      className="flex gap-1 overflow-x-auto pb-2 lg:flex-col lg:overflow-x-visible lg:pb-0"
+      aria-label="Navigation principale"
+    >
       {items.map((item) => {
         const isExact = exact.includes(item.href)
         const active = isExact
@@ -34,7 +37,7 @@ export function Nav({ items, exact = [] }: { items: NavItem[]; exact?: string[] 
             href={item.href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+              'whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors',
               active
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted hover:bg-surface-muted hover:text-foreground',
