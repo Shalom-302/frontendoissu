@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ApiError, apiFetch } from '@/lib/api-server'
+import { apiErrorMessage, apiFetch } from '@/lib/api-server'
 import type { Athlete, AthleteFilters, Page } from '@/types'
 
 export const metadata: Metadata = { title: 'Athlètes' }
@@ -42,10 +42,7 @@ export default async function AdminAthletesPage({
       apiFetch<AthleteFilters>('/api/v1/admin/athletes/filters'),
     ])
   } catch (error) {
-    const message =
-      error instanceof ApiError
-        ? error.message
-        : 'Le service est momentanément injoignable. Réessayez dans un instant.'
+    const message = apiErrorMessage(error)
     return (
       <Alert tone="error">
         <p className="font-medium">Liste indisponible</p>

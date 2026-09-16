@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { Logo } from '@/components/brand/logo'
 import { LoginForm } from '@/components/auth/login-form'
+import { Alert } from '@/components/ui/alert'
 
 export const metadata: Metadata = { title: 'Connexion' }
 
@@ -15,9 +16,9 @@ export const metadata: Metadata = { title: 'Connexion' }
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>
+  searchParams: Promise<{ next?: string; expired?: string }>
 }) {
-  const { next } = await searchParams
+  const { next, expired } = await searchParams
 
   return (
     <div className="grid min-h-dvh place-items-center px-4 py-10">
@@ -30,6 +31,12 @@ export default async function LoginPage({
         <p className="mt-1 text-sm text-muted">
           Accédez à votre espace athlète ou à l&apos;espace d&apos;administration.
         </p>
+
+        {expired ? (
+          <Alert className="mt-5">
+            Votre session a expiré. Reconnectez-vous pour continuer.
+          </Alert>
+        ) : null}
 
         <LoginForm className="mt-6" next={next} />
 

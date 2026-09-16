@@ -5,7 +5,7 @@ import { Pagination } from '@/components/admin/pagination'
 import { PerformanceTable } from '@/components/athlete/performance-table'
 import { Alert } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
-import { ApiError, apiFetch } from '@/lib/api-server'
+import { apiErrorMessage, apiFetch } from '@/lib/api-server'
 import { DISCIPLINES, MEDALS } from '@/lib/constants'
 import type { Page, Performance } from '@/types'
 
@@ -41,10 +41,7 @@ export default async function AdminPerformancesPage({
       `/api/v1/admin/performances?${query.toString()}`,
     )
   } catch (error) {
-    const message =
-      error instanceof ApiError
-        ? error.message
-        : 'Le service est momentanément injoignable. Réessayez dans un instant.'
+    const message = apiErrorMessage(error)
     return (
       <Alert tone="error">
         <p className="font-medium">Liste indisponible</p>
