@@ -14,11 +14,11 @@ export function CtaBand({ signedIn, homeHref }: { signedIn: boolean; homeHref: s
         alt={CTA_IMAGE.alt}
         fill
         sizes="100vw"
-        className="-z-20 object-cover object-[center_72%]"
+        className="-z-20 object-cover object-center"
       />
-      {/* The photograph is a night shot already: a heavy wash would flatten it
-          into a plain navy block, so this only darkens the half carrying text. */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-900/92 via-navy-900/55 to-navy-900/15" />
+      {/* Dark enough on the left for white type, clear on the right so the
+          photograph still reads as a photograph. */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-900/94 via-navy-900/72 to-navy-900/35" />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:py-24">
         <Reveal className="max-w-2xl">
