@@ -12,7 +12,7 @@ import { StatCard } from '@/components/dashboard/stat-card'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ApiError, apiFetch } from '@/lib/api-server'
+import { apiErrorMessage, apiFetch } from '@/lib/api-server'
 import type { AdminDashboard } from '@/types'
 
 export const metadata: Metadata = { title: 'Pilotage' }
@@ -24,10 +24,7 @@ export default async function AdminDashboardPage() {
   try {
     dashboard = await apiFetch<AdminDashboard>('/api/v1/admin/dashboard')
   } catch (error) {
-    const message =
-      error instanceof ApiError
-        ? error.message
-        : 'Le service est momentanément injoignable. Réessayez dans un instant.'
+    const message = apiErrorMessage(error)
     return (
       <Alert tone="error">
         <p className="font-medium">Tableau de bord indisponible</p>

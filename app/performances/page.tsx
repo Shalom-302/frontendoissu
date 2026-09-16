@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { PerformanceTable } from '@/components/athlete/performance-table'
 import { Alert } from '@/components/ui/alert'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ApiError, apiFetch } from '@/lib/api-server'
+import { apiErrorMessage, apiFetch } from '@/lib/api-server'
 import type { Performance } from '@/types'
 
 export const metadata: Metadata = { title: 'Mes performances' }
@@ -15,10 +15,7 @@ export default async function PerformancesPage() {
   try {
     performances = await apiFetch<Performance[]>('/api/v1/athletes/me/performances')
   } catch (error) {
-    const message =
-      error instanceof ApiError
-        ? error.message
-        : 'Le service est momentanément injoignable. Réessayez dans un instant.'
+    const message = apiErrorMessage(error)
     return (
       <Alert tone="error">
         <p className="font-medium">Historique indisponible</p>

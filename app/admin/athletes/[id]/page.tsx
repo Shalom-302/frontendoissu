@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 import { AthleteAdminPanel } from '@/components/admin/athlete-admin-panel'
 import { AthletePerformances } from '@/components/admin/athlete-performances'
@@ -25,6 +25,8 @@ export default async function AdminAthletePage({
     athlete = await apiFetch<AthleteDetail>(`/api/v1/admin/athletes/${id}`)
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound()
+    // The session died between the click and the fetch.
+    if (error instanceof ApiError && error.status === 401) redirect('/api/auth/expired')
     throw error
   }
 
