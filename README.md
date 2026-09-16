@@ -116,14 +116,16 @@ middleware.ts                 Garde de routes
 
 Trois branches, **le même code source**, des fichiers de configuration Docker
 différents. `docker-compose.yml` est identique partout et décrit la forme de
-production ; chaque branche fournit son propre `docker-compose.override.yml`,
-chargé automatiquement par `docker compose up`.
+production : l'image est **tirée** du registre, pas construite. Seul
+`docker-compose.dev.yml` ajoute une section `build:`. Chaque branche fournit son
+propre `docker-compose.override.yml`, chargé automatiquement par
+`docker compose up`.
 
 | Branche | `docker-compose.override.yml` | Ce qu'elle apporte |
 | --- | --- | --- |
-| `dev` | copie de `docker-compose.dev.yml` | Étape `dev` de l'image, bind-mount du code source, hot-reload, API sur `localhost` |
-| `staging` | copie de `docker-compose.staging.yml` | Image de production, rattachement au réseau externe `dokploy-network`, port dédié, limites mémoire et rotation des logs |
-| `main` | copie de `docker-compose.prod.yml` | Durcissement : filesystem en lecture seule, `no-new-privileges`, politique de redémarrage |
+| `dev` | copie de `docker-compose.dev.yml` | Construit l'étape `dev` localement, bind-mount du code source, hot-reload, API sur `localhost` |
+| `staging` | copie de `docker-compose.staging.yml` | Tire `:staging` depuis GHCR, rattachement au réseau externe `dokploy-network`, port dédié, limites mémoire et rotation des logs |
+| `main` | copie de `docker-compose.prod.yml` | Tire `:main`, `dokploy-network`, durcissement : filesystem en lecture seule, `no-new-privileges`, politique de redémarrage |
 
 Les trois variantes restent présentes dans le dépôt sous leur nom explicite
 (`docker-compose.dev.yml`, `.staging.yml`, `.prod.yml`) : seule la copie active
@@ -135,6 +137,42 @@ git checkout dev        # travail local, hot-reload
 git checkout staging    # pré-production (Dokploy)
 git checkout main       # production
 ```
+
+## Image de conteneur (GHCR)
+
+`.github/workflows/docker-publish.yml` construit et publie à chaque push sur une
+branche de déploiement :
+
+| Branche ou tag | Image |
+| --- | --- |
+| `dev` | `ghcr.io/shalom-302/frontendoissu:dev` |
+| `staging` | `ghcr.io/shalom-302/frontendoissu:staging` |
+| `main` | `ghcr.io/shalom-302/frontendoissu:main` et `:latest` |
+| `v1.2.3` | `ghcr.io/shalom-302/frontendoissu:1.2.3`, `:1.2`, `:1` |
+
+Chaque build porte aussi le SHA court du commit, de quoi épingler un
+déploiement à un commit exact via `WEB_IMAGE`.
+
+Le workflow s'authentifie avec le `GITHUB_TOKEN` du dépôt — aucun secret à
+créer. **Le paquet est privé par défaut** : rendez-le public, ou ajoutez un
+registre dans Dokploy avec un token `read:packages`.
+
+Comme `API_INTERNAL_URL` est lue **à l'exécution** et non au build, la même
+image se promeut de staging vers la production sans reconstruction.
+
+## Déploiement sur Dokploy
+
+Créez une application **Compose** pointant sur ce dépôt :
+
+| Champ | Valeur |
+| --- | --- |
+| Dépôt | `Shalom-302/frontendoissu` |
+| Branche | `staging` ou `main` |
+| Chemin du compose | `docker-compose.yml` |
+
+`docker-compose.override.yml` est à côté et se charge tout seul : la branche
+suffit à décider de l'environnement. Dokploy tire l'image au lieu de la
+construire, puisqu'aucun fichier compose de ces branches n'a de `build:`.
 
 ### Staging et Dokploy
 

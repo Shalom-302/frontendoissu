@@ -1,14 +1,14 @@
 # Staging overrides — this file IS `docker-compose.override.yml` on the
 # `staging` branch.
 #
-# Same source, same image shape as production: staging exists to catch what
-# differs between "it works on my machine" and a real deployment, so it runs the
-# compiled standalone server, not the dev server. What it changes is the network
-# it lives on, the address of the API, the published port and the operational
-# guard-rails.
+# Same source, same image as production: staging exists to catch what differs
+# between "it works on my machine" and a real deployment, so it runs the
+# compiled standalone server pulled from GHCR, not a local dev build. What it
+# changes is the network it lives on, the address of the API, the published port
+# and the operational guard-rails.
 services:
   web:
-    container_name: oissu_client_staging
+    image: ${WEB_IMAGE:-ghcr.io/shalom-302/frontendoissu:staging}
     environment:
       - NODE_ENV=production
       - API_INTERNAL_URL=${API_INTERNAL_URL:?API_INTERNAL_URL is required on staging}
