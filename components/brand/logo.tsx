@@ -66,11 +66,11 @@ export function Logo({
     <span className={cn('flex items-center gap-2.5', className)}>
       <LogoMark size={size} tone={tone} priority={priority} />
       <span className="flex flex-col leading-none">
-        <span className="text-[0.95rem] font-bold tracking-tight">
+        <span className="whitespace-nowrap text-[0.95rem] font-bold tracking-tight">
           OISSU<span className="text-flame-500"> CONNECT</span>
         </span>
         {showTagline ? (
-          <span className="mt-1 text-[0.68rem] font-medium uppercase tracking-[0.14em] opacity-70">
+          <span className="mt-1 whitespace-nowrap text-[0.68rem] font-medium uppercase tracking-[0.14em] opacity-70">
             Sport scolaire et universitaire
           </span>
         ) : null}
