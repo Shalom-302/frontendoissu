@@ -29,8 +29,12 @@ services:
       # address that has to resolve — and it is read at runtime, not baked into
       # the build, which is why the exact image validated on staging is the one
       # promoted to production.
-      # Required: a deployment must never fall back silently to a local API.
-      - API_INTERNAL_URL=${API_INTERNAL_URL:?API_INTERNAL_URL est obligatoire}
+      # Defaults to the API container on dokploy-network — the peer this file
+      # already commits to by joining that network. Not a silent fallback: the
+      # one thing worth refusing is a deployment quietly talking to localhost,
+      # and this never can. Override it with the public URL if the API lives on
+      # another host: API_INTERNAL_URL=https://oissu-api.kortex.sbs
+      - API_INTERNAL_URL=${API_INTERNAL_URL:-http://oissu_api:8000}
       - NODE_ENV=production
     logging:
       driver: json-file
