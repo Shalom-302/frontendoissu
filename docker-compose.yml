@@ -1,0 +1,37 @@
+# Base stack — identical on every branch (dev / staging / main).
+#
+# It describes the PRODUCTION shape: the lean `runner` image, no source mount,
+# no hot reload. Each branch ships its own `docker-compose.override.yml` (loaded
+# automatically by `docker compose up`) with the differences that environment
+# needs. Keeping the base file identical everywhere is what makes a merge
+# between branches touch the override only.
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: oissu-connect-client:latest
+    container_name: oissu_client
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      # Where the Next.js server reaches the API. The browser never calls the
+      # API directly (everything goes through /api/proxy), so this is the only
+      # address that has to resolve — and it is read at runtime, not baked into
+      # the build.
+      - API_INTERNAL_URL=${API_INTERNAL_URL:-http://host.docker.internal:8000}
+      - NODE_ENV=production
+    extra_hosts:
+      # Lets the container reach a backend running on the host (Docker Desktop
+      # provides this name natively; on Linux the mapping below adds it).
+      - "host.docker.internal:host-gateway"
+    networks:
+      - oissu
+
+networks:
+  oissu:
+    driver: bridge

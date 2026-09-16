@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+
+/*
+ * OISSU CONNECT design tokens.
+ *
+ * One palette, defined once on `:root` and re-pointed under `.dark`, so every
+ * component styles itself with semantic names (`bg-surface`, `text-muted`)
+ * rather than raw colours. Swapping the institutional colours is a one-file job.
+ */
+
+@theme {
+  --color-brand-50: #eef7f1;
+  --color-brand-100: #d3ebda;
+  --color-brand-200: #a7d7b6;
+  --color-brand-300: #71bb8c;
+  --color-brand-400: #429b65;
+  --color-brand-500: #1f7a48;
+  --color-brand-600: #16613a;
+  --color-brand-700: #124d2f;
+  --color-brand-800: #0e3c25;
+  --color-brand-900: #0a2a1a;
+
+  --color-accent-400: #f9a03f;
+  --color-accent-500: #ef7f1a;
+  --color-accent-600: #c96311;
+
+  --color-gold: #d4af37;
+  --color-silver: #9ca3af;
+  --color-bronze: #b46b3a;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+}
+
+:root {
+  --background: #f6f7f5;
+  --surface: #ffffff;
+  --surface-muted: #f1f3f0;
+  --border: #e2e6e0;
+  --foreground: #14211a;
+  --muted: #5d6b62;
+  --primary: var(--color-brand-500);
+  --primary-foreground: #ffffff;
+  --ring: var(--color-brand-400);
+}
+
+.dark {
+  --background: #0c120f;
+  --surface: #131b17;
+  --surface-muted: #1a241e;
+  --border: #253128;
+  --foreground: #eaf1ec;
+  --muted: #9aa9a0;
+  --primary: var(--color-brand-400);
+  --primary-foreground: #06120c;
+  --ring: var(--color-brand-300);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible focus everywhere, so the whole app stays keyboard-navigable. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}

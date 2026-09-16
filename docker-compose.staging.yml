@@ -1,0 +1,24 @@
+# Staging overrides — this file IS `docker-compose.override.yml` on the
+# `staging` branch.
+#
+# Same source, same image shape as production: staging exists to catch what
+# differs between "it works on my machine" and a real deployment, so it runs the
+# compiled standalone server, not the dev server. What it changes is the address
+# of the API, the published port and the operational guard-rails.
+services:
+  web:
+    container_name: oissu_client_staging
+    environment:
+      - NODE_ENV=production
+      - API_INTERNAL_URL=${API_INTERNAL_URL:?API_INTERNAL_URL is required on staging}
+    ports:
+      - "${WEB_PORT:-3001}:3000"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
