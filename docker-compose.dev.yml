@@ -7,12 +7,15 @@
 #      A named volume is mounted over /app/node_modules so the bind mount does
 #      not hide the dependencies installed in the image (the Node equivalent of
 #      the backend keeping its virtualenv at /opt/venv).
-#   2. Build the `dev` stage, which runs `next dev` instead of the compiled
-#      standalone server.
+#   2. Build the `dev` stage locally — the base file pulls a prebuilt image —
+#      which runs `next dev` instead of the compiled standalone server.
 services:
   web:
     build:
+      context: .
+      dockerfile: Dockerfile
       target: dev
+    image: oissu-client:dev
     environment:
       - NODE_ENV=development
       - API_INTERNAL_URL=${API_INTERNAL_URL:-http://host.docker.internal:8000}

@@ -5,6 +5,9 @@
 # datastore. It only hardens what the base file already describes.
 services:
   web:
+    image: ${WEB_IMAGE:-ghcr.io/shalom-302/frontendoissu:main}
+    networks: !override
+      - dokploy-network
     environment:
       - NODE_ENV=production
       - API_INTERNAL_URL=${API_INTERNAL_URL:?API_INTERNAL_URL is required in production}
@@ -28,3 +31,7 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
+
+networks:
+  dokploy-network:
+    external: true

@@ -1,18 +1,18 @@
 # Base stack — identical on every branch (dev / staging / main).
 #
-# It describes the PRODUCTION shape: the lean `runner` image, no source mount,
-# no hot reload. Each branch ships its own `docker-compose.override.yml` (loaded
-# automatically by `docker compose up`) with the differences that environment
-# needs. Keeping the base file identical everywhere is what makes a merge
-# between branches touch the override only.
+# It describes the PRODUCTION shape: the image is PULLED from the registry, not
+# built here, and there is no source mount or hot reload.
+# `docker-compose.dev.yml` is the only overlay that adds a `build:` section —
+# which is what lets Dokploy deploy by pulling a tag instead of compiling on the
+# server. Each branch ships its own `docker-compose.override.yml` (loaded
+# automatically by `docker compose up`), so a merge between branches touches the
+# override only.
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runner
-    image: oissu-connect-client:latest
-    container_name: oissu_client
+    # Published by .github/workflows/docker-publish.yml on every push.
+    # Override with WEB_IMAGE to pin a tag or a commit.
+    image: ${WEB_IMAGE:-ghcr.io/shalom-302/frontendoissu:main}
+    container_name: ${WEB_CONTAINER_NAME:-oissu_client}
     restart: unless-stopped
     ports:
       - "${WEB_PORT:-3000}:3000"
