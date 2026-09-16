@@ -1,17 +1,26 @@
-# Base stack — identical on every branch (dev / staging / main).
+# OISSU CONNECT — frontend stack (dev).
 #
-# It describes the PRODUCTION shape: the image is PULLED from the registry, not
-# built here, and there is no source mount or hot reload.
-# `docker-compose.dev.yml` is the only overlay that adds a `build:` section —
-# which is what lets Dokploy deploy by pulling a tag instead of compiling on the
-# server. Each branch ships its own `docker-compose.override.yml` (loaded
-# automatically by `docker compose up`), so a merge between branches touches the
-# override only.
+# SELF-CONTAINED ON PURPOSE. There is no docker-compose.override.yml: Dokploy
+# deploys with an explicit `-f <compose path>`, and Docker Compose only
+# auto-loads an override file when it discovers the files itself. An overlay
+# would therefore be silently ignored in production — the stack would start with
+# the wrong image on the wrong network and look healthy.
+#
+# So each branch carries its own complete file:
+#   dev      local build of the `dev` stage, source bind-mounted, hot reload
+#   staging  pulls :staging from GHCR, joins dokploy-network
+#   main     pulls :main    from GHCR, joins dokploy-network, hardened
+#
+# What you read here is exactly what runs on this branch.
 services:
   web:
-    # Published by .github/workflows/docker-publish.yml on every push.
-    # Override with WEB_IMAGE to pin a tag or a commit.
-    image: ${WEB_IMAGE:-ghcr.io/shalom-302/frontendoissu:main}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Runs `next dev`; the deployed branches run the compiled standalone
+      # server from the `runner` stage instead.
+      target: dev
+    image: oissu-client:dev
     container_name: ${WEB_CONTAINER_NAME:-oissu_client}
     restart: unless-stopped
     ports:
@@ -22,15 +31,31 @@ services:
       # Where the Next.js server reaches the API. The browser never calls the
       # API directly (everything goes through /api/proxy), so this is the only
       # address that has to resolve — and it is read at runtime, not baked into
-      # the build.
+      # the build, which is why the exact image validated on staging is the one
+      # promoted to production.
       - API_INTERNAL_URL=${API_INTERNAL_URL:-http://host.docker.internal:8000}
-      - NODE_ENV=production
+      - NODE_ENV=development
+    volumes:
+      # Hot reload without rebuilding.
+      - .:/app
+      # Node resolves node_modules by walking up from the importing file, so the
+      # backend's "keep it outside /app" trick does not apply. A named volume
+      # over this path keeps the image's dependencies visible under the mount.
+      - client_node_modules:/app/node_modules
+      # Build artefacts stay in the container: sharing .next with the host mixes
+      # the container's Linux build with the host's and breaks both.
+      - client_next_cache:/app/.next
     extra_hosts:
-      # Lets the container reach a backend running on the host (Docker Desktop
-      # provides this name natively; on Linux the mapping below adds it).
+      # Reaches an API running on the host (Docker Desktop provides this name
+      # natively; on Linux the mapping adds it).
       - "host.docker.internal:host-gateway"
+    command: npm run dev
     networks:
       - oissu
+
+volumes:
+  client_node_modules:
+  client_next_cache:
 
 networks:
   oissu:
